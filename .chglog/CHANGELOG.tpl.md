@@ -1,8 +1,8 @@
 {{ if .Versions -}}
-<a name="unreleased"></a>
-## [Unreleased]
 
 {{ if .Unreleased.CommitGroups -}}
+<a name="unreleased"></a>
+## [Unreleased]
 {{ range .Unreleased.CommitGroups -}}
 ### {{ .Title }}
 {{ range .Commits -}}

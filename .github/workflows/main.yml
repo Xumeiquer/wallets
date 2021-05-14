@@ -47,11 +47,14 @@ jobs:
           export PATH=$PATH:$(go env GOPATH)/bin
           task clean && task
       
+      - name: Get changelog
+        run: git-chglog --output CHANGELOG.release.md ${{steps.tag.outputs.tag}}
+      
       - name: Create Release
         uses: ncipollo/release-action@v1.8.5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: WALLET-${{steps.tag.outputs.tag}}
-          bodyFile: "CHANGELOG.md"
+          name: WALLET ${{steps.tag.outputs.tag}}
+          bodyFile: "CHANGELOG.release.md"
           draft: false
           artifacts: dist/*
