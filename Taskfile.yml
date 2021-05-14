@@ -22,6 +22,7 @@ tasks:
         vars: {FOLDER: "build"}
       - go generate .
       - find . -name "*_vgen.go" -exec goreturns -w {} \;
+      - go mod tidy
       - go build -o build/main.wasm webapp/main.go
       - cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" build/wasm_exec.js
 
@@ -40,6 +41,7 @@ tasks:
     cmds:
       - task: mkdir
         vars: {FOLDER: "dist"}
+      - go mod tidy
       - task: build
         vars: {GOOS: "windows", GOARCH: "amd64"}
       - task: build
