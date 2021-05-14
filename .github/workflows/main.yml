@@ -25,9 +25,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
       
       - name: Update Go envs
-        run: export PATH=$PATH:$(go env GOPATH)/bin
+        run: export PATH=$PATH:$GOBIN
 
       - name: Setup go-task/task
         # You may pin to the exact commit or the version.
