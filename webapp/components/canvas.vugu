@@ -1,0 +1,75 @@
+<div :style="c.GetStyle()">
+    <canvas 
+        :id='c.Id'
+        vg-js-create="c.CreateCanvas(value)">
+        Your browser does not support canvas
+    </canvas>
+</div>
+
+<script type="application/x-go">
+import (
+    "fmt"
+)
+
+type Canvas struct {
+    Id string `vugu:"data"`
+    Width string `vugu:"data"`
+    Height string `vugu:"data"`
+    Type string `vugu:"data"`
+    Data map[string]interface{} `vugu:"data"`
+
+    Chart js.Value
+    Created bool
+}
+
+func (c *Canvas) Init() {
+    fmt.Println("[CANVAS] Init")
+
+    c.Created = false
+    if len(c.Data) != 0 {
+        c.Data["type"] = c.Type
+        c.Data["options"] = c.AddOptions()
+    }
+}
+
+func (c *Canvas) GetStyle() string {
+    out := ""
+    if c.Width != "" {
+        out += fmt.Sprintf("width: %spx;", c.Width)
+    }
+    if c.Height != "" {
+        out += fmt.Sprintf("height:%spx;", c.Height)
+    }
+    return out
+}
+
+func (c *Canvas) CreateCanvas(value js.Value) {
+    fmt.Println("[CANVAS] CreateCanvas")
+
+    if c.Created {
+        c.Chart.Call("destroy")
+    }
+
+    defer func() {
+        if r := recover(); r != nil {
+            fmt.Println("[CANVAS] WARN :: Recovered in f", r)
+        }
+    }()
+
+    chartjs := js.Global().Get("Chart")
+    ctx := value.Call("getContext", "2d")
+    
+    if len(c.Data) != 0 {
+        c.Chart = chartjs.New(ctx, c.Data)
+        c.Created = true
+    }
+}
+
+func (c *Canvas) AddOptions() map[string]interface{} {
+    opt := map[string]interface{}{}
+
+    opt["responsive"] = true
+
+    return opt
+}
+</script>

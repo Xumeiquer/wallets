@@ -1,0 +1,27 @@
+<div>
+    <components:Header></components:Header>
+    <main role="main" class="container-fluid mt-100">
+        <!-- RENDER THE BODY -->
+        <vg-comp expr="c.Body"></vg-comp>
+    </main>
+    <components:Footer></components:Footer>
+</div>
+
+<style>
+.mt-100 {
+    margin-top: 100px;
+}
+</style>
+
+<script type="application/x-go">
+
+import (
+    "github.com/vugu/vgrouter"
+)
+
+type Root struct {
+    vgrouter.NavigatorRef
+    Body vugu.Builder
+}
+
+</script>

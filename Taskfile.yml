@@ -1,0 +1,44 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task: client
+      - task: copy-assets
+      - task: server
+
+  client:
+    env:
+      GOOS: js
+      GOARCH: wasm
+    cmds:
+      - task: mkdir
+        vars: {FOLDER: "build"}
+      - go generate .
+      - find . -name "*_vgen.go" -exec goreturns -w {} \;
+      - go build -o build/main.wasm webapp/main.go
+      - cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" build/wasm_exec.js
+  
+  server:
+    cmds:
+      - task: mkdir
+        vars: {FOLDER: "dist"}
+      - go build -o dist/server server/main.go   
+
+  copy-assets:
+    cmds:
+      - task: mkdir
+        vars: {FOLDER: "server/assets/app"}
+      - cp -r assets/* server/assets/
+      - cp build/* server/assets/app/
+
+  clean:
+    cmds:
+      - find . -name "*_vgen.go" -exec rm -f {} \;
+      - rm -rf server/assets
+      - rm -rf build
+      - rm -rf dist
+  
+  mkdir:
+    cmds:
+      - mkdir -p {{.FOLDER}}

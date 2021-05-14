@@ -1,0 +1,96 @@
+<div class="d-flex justify-content-center mt-2">
+    <div>
+        <p class="fs-4 d-flex justify-content-evenly">Profitability</p>
+        <table class="table table-borderless">
+            <thead>
+            </thead>
+                <tr>
+                    <th scope="coll">Accumulated</th>
+                    <th scope="coll">Profitability</th>
+                    <th scope="coll">Annualized</th>
+                </tr>
+            <tbody>
+                <tr vg-for="typeName, values := range c.GetSummary()">
+                    <td class="text-center">
+                        <span vg-content="values[0]"></span>
+                    </td>
+                    <td class="text-center">
+                        <span vg-content="typeName" style="font-weight: bold;"></span>
+                    </td>
+                    <td class="text-center">
+                        <span vg-content="values[1]"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="application/x-go">
+import (
+    "fmt"
+
+    "github.com/Xumeiquer/wallets/models"
+    "github.com/Xumeiquer/wallets/webapp/middleware"
+)
+
+type DashboardProfit struct {
+    middleware.StateRef
+
+    ActiveWallet *models.Wallet `vugu:"data"`
+}
+
+func (d *DashboardProfit) Init() {
+    fmt.Println("[DASHBOARD-PROFIT] Init")
+
+    v, err := d.State.Get("activeWallet")
+    if err == nil {
+        w, ok := v.(*models.Wallet)
+        if ok {
+            d.ActiveWallet = w
+        }
+    }
+}
+
+func (d *DashboardProfit) Compute() {
+    fmt.Println("[DASHBOARD-PROFIT] Compute")
+
+    v, err := d.State.Get("activeWallet")
+    if err == nil {
+        w, ok := v.(*models.Wallet)
+        if ok {
+            d.ActiveWallet = w
+        }
+    }
+}
+
+func (d *DashboardProfit) GetSummary() map[string][]string {
+    fmt.Println("[DASHBOARD-PROFIT] GetSummary")
+    res := map[string][]string{}
+
+    totalSimple := float32(0)
+    totalTWR := float32(0)
+    totalMWR := float32(0)
+
+    for _, values := range d.ActiveWallet.Profitability() {
+        totalSimple += values[1]
+        totalTWR += values[2]
+        totalMWR += values[3]
+    }
+
+    names := []string{"Simple", "TWR", "MWR"}
+    for _, name := range names {
+        res[name] = []string{}
+    }
+
+    res["Simple"] = append(res["Simple"], fmt.Sprintf("%.3f%%", totalSimple))
+    res["Simple"] = append(res["Simple"], "0.0")
+    res["TWR"] = append(res["TWR"], fmt.Sprintf("%.3f%%", totalTWR))
+    res["TWR"] = append(res["TWR"], "0.0")
+    res["MWR"] = append(res["MWR"], fmt.Sprintf("%.3f%%", totalMWR))
+    res["MWR"] = append(res["MWR"], "0.0")
+
+    return res
+}
+
+</script>

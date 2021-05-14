@@ -1,0 +1,162 @@
+<div>
+    <ul class="nav nav-pills nav-justified">
+        <li class="nav-item">
+            <a id="displayDashboardCB"
+                class="nav-link"
+                aria-current="page"
+                href="#" 
+                @click="c.DisplayCB(event)">Dashboard</a>
+        </li>
+        <li class="nav-item">
+            <a id="displayWalletCB"
+                class="nav-link"
+                aria-current="page"
+                href="#" 
+                @click="c.DisplayCB(event)">Wallet</a>
+        </li>
+        <li class="nav-item">
+            <a id="displayOpsCB"
+                class="nav-link" 
+                href="#"
+                @click="c.DisplayCB(event)">Ops</a>
+        </li>
+    </ul>
+    <hr />
+    <div >
+        <vg-comp expr="c.Tab"></vg-comp>
+    </div>
+</div>
+
+<script type="application/x-go">
+
+import (
+    "github.com/Xumeiquer/wallets/webapp/components/wallet"
+    "github.com/Xumeiquer/wallets/webapp/components/dashboard"
+    "github.com/Xumeiquer/wallets/webapp/components/operations"
+    "github.com/Xumeiquer/wallets/webapp/middleware"
+)
+
+type Index struct {
+    middleware.StateRef
+
+    Tab vugu.Builder
+
+    ActiveWallet *models.Wallet `vugu:"data"`
+    walletAlreadyActive bool
+    activeTab string
+}
+
+func (idx *Index) Init() {
+    fmt.Println("[INDEX] Init")
+    
+    idx.Tab = nil
+    idx.walletAlreadyActive = false
+    v, err := idx.State.Get("activeWallet")
+    if err == nil {
+        w, ok := v.(*models.Wallet)
+        if ok {
+            if w != nil {
+                idx.ActiveWallet = w
+                if !idx.walletAlreadyActive {
+                    idx.activeTab = "displayDashboardCB"
+                    idx.Tab = &dashboard.Dashboard{}
+                }
+                idx.walletAlreadyActive = true
+            }
+        } else {
+            idx.activeTab = ""
+            idx.Tab = nil
+        }
+    }
+}
+
+func (idx *Index) Compute() {
+    fmt.Println("[INDEX] Compute")
+
+    v, err := idx.State.Get("activeWallet")
+    if err == nil {
+        w, ok := v.(*models.Wallet)
+        if ok {
+            if w != nil {
+                idx.ActiveWallet = w
+                if !idx.walletAlreadyActive {
+                    idx.activeTab = "displayDashboardCB"
+                    idx.Tab = &dashboard.Dashboard{}
+                }
+                idx.walletAlreadyActive = true
+            }
+        } else {
+            idx.activeTab = ""
+            idx.Tab = nil
+        }
+    }
+}
+
+func (idx *Index) Rendered() {
+    fmt.Println("[INDEX] Rendered")
+
+    idx.ActiveTab(idx.activeTab)
+}
+
+func (idx *Index) DisplayCB(event vugu.DOMEvent) {
+    fmt.Println("[INDEX] DisplayCB")
+
+    if idx.ActiveWallet != nil {
+        target := event.Prop("target").(map[string]interface{})
+        tab := target["text"]
+
+        switch tab {
+            case "Dashboard":
+                idx.activeTab = "displayDashboardCB"
+                idx.Tab = &dashboard.Dashboard{}
+            case "Wallet":
+                idx.activeTab = "displayWalletCB"
+                idx.Tab = &wallet.Wallet{}
+            case "Ops":
+                idx.activeTab = "displayOpsCB"
+                idx.Tab = &operations.Operations{}
+        }
+    }
+}
+
+func (idx *Index) ActiveTab(target string) {
+    fmt.Printf("[INDEX] ActiveTab :: %s\n", target)
+
+    if target == "" {
+        idx.walletAlreadyActive = false
+    }
+
+    items := []string{"displayDashboardCB", "displayWalletCB", 
+                    "displayOpsCB"}
+
+    getItems := func(s string) []string {
+        nItems := []string{}
+        for _, item := range items {
+            if item != s {
+                nItems = append(nItems, item)
+            }
+        }
+        return nItems
+    }
+
+    // Cleaning up previous active tabs
+    for _, item := range getItems(target) {
+        itemJS := js.Global().Get("document").Call("getElementById", item)
+        itemClasses := itemJS.Get("className").String()
+        if strings.Contains(itemClasses, "active") {
+            itemClasses = strings.Replace(itemClasses, "active", "", -1)
+            itemJS.Set("className", itemClasses)
+            fmt.Printf("Removing 'active' class from %s\n", item)
+        }
+    }
+
+    // Activating the current tab
+    if target != ""{
+        targetJS := js.Global().Get("document").Call("getElementById", target)
+        targetClasses := targetJS.Get("className").String()
+        if !strings.Contains(targetClasses, "active") {
+            targetJS.Set("className", targetClasses + " active")
+        }
+    }
+}
+</script>

@@ -1,0 +1,56 @@
+<div class="container">
+    <div vg-if="len(c.ActiveWallet.GetFunds()) > 0" class="row">
+        <div class="col-md-6">
+            <components:Canvas
+                Id="assetAllocation"
+                Type="pie"
+                :Data='c.AssetsAllocationData'></components:Canvas>
+        </div>
+        <div class="col-md-6">
+            <components:Canvas
+                Id="historicWallet"
+                Type="line"
+                :Data='c.HistoricWalletData'></components:Canvas>
+        </div>
+    </div>
+</div>
+<script type="application/x-go">
+import (
+    "fmt"
+
+    "github.com/Xumeiquer/wallets/models"
+    "github.com/Xumeiquer/wallets/webapp/middleware"
+)
+
+type DashboardCharts struct {
+    middleware.StateRef
+
+    ActiveWallet *models.Wallet `vugu:"data"`
+
+    AssetsAllocationData map[string]interface{} `vugu:"data"`
+    HistoricWalletData map[string]interface{} `vugu:"data"`
+
+    CanvasRendered bool
+}
+
+func (d *DashboardCharts) Init() {
+    fmt.Println("[DASHBOARD-CHARTS] Init")
+
+    v, err := d.State.Get("activeWallet")
+    if err == nil {
+        w, ok := v.(*models.Wallet)
+        if ok {
+            d.ActiveWallet = w
+        }
+    }
+
+    d.AssetsAllocationData = d.ActiveWallet.GetAssetsAllocationPOJO()
+    d.HistoricWalletData = d.ActiveWallet.GetHistoricWalletPOJO()
+}
+
+func (d *DashboardCharts) Rendered() {
+    fmt.Println("[DASHBOARD-CHARTS] Rendered")
+    d.CanvasRendered = true
+}
+
+</script>

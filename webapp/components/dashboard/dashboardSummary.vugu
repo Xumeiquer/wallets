@@ -1,0 +1,99 @@
+<div class="d-flex justify-content-evenly mt-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <p class="fs-4"><span>Wallet: </span><b vg-content='c.WalletsName()'></b></p>
+            </div>
+            <div class="col-md-4">
+                <p class="fs-4"><span>Worth: </span><b vg-content='c.WalletWorth()'></b></p>
+            </div>
+            <div class="col-md-4">
+                <p vg-if='!strings.HasPrefix(c.WalletProfitability(), "-")'
+                    class="fs-4">
+                    <span>Profitability: </span>
+                    <b vg-if='c.WalletProfitability() != "0.000€"' vg-content='c.WalletProfitability()'
+                        class="text-success"></b>
+                    <b vg-if='c.WalletProfitability() == "0.000€"' vg-content='c.WalletProfitability()'></b>
+                </p>
+                <p vg-if='strings.HasPrefix(c.WalletProfitability(), "-")'
+                    class="fs-4">
+                    <span>Profitability: </span>
+                    <b vg-content='c.WalletProfitability()'
+                        class="text-danger"></b>
+                </p>
+            </div>
+        </div>
+    </div>  
+</div>
+
+<script type="application/x-go">
+import (
+    "fmt"
+    "strings"
+
+    "github.com/Xumeiquer/wallets/models"
+    "github.com/Xumeiquer/wallets/webapp/middleware"
+)
+
+type DashboardSummary struct {
+    middleware.StateRef
+
+    ActiveWallet *models.Wallet `vugu:"data"`
+}
+
+func (d *DashboardSummary) Init() {
+    fmt.Println("[DASHBOARD-SUMMARY] Init")
+
+    v, err := d.State.Get("activeWallet")
+    if err == nil {
+        w, ok := v.(*models.Wallet)
+        if ok {
+            d.ActiveWallet = w
+        }
+    }
+}
+
+func (d *DashboardSummary) Compute() {
+    fmt.Println("[DASHBOARD-SUMMARY] Compute")
+
+    v, err := d.State.Get("activeWallet")
+    if err == nil {
+        w, ok := v.(*models.Wallet)
+        if ok {
+            d.ActiveWallet = w
+        }
+    }
+}
+
+func (d *DashboardSummary) WalletsName() string {
+    fmt.Println("[DASHBOARD-SUMMARY] WalletsName")
+
+    if d.ActiveWallet == nil {
+        return ""
+    }
+    return d.ActiveWallet.GetName()
+}
+
+func (d *DashboardSummary) WalletWorth() string {
+    fmt.Println("[DASHBOARD-SUMMARY] WalletWorth")
+
+    totalWorth := float32(0)
+
+    for _, values := range d.ActiveWallet.Capitalization() {
+        totalWorth += values[len(values)-1]
+    }
+    return fmt.Sprintf("%.3f€", totalWorth)
+}
+
+func (d *DashboardSummary) WalletProfitability() string {
+    fmt.Println("[DASHBOARD-SUMMARY] WalletProfitability")
+    res := float32(0)
+
+    for _, values := range d.ActiveWallet.Profitability() {
+       res += values[0] 
+    }
+
+    return fmt.Sprintf("%.3f€", res)
+}
+
+</script>

@@ -1,0 +1,11 @@
+<div class="container">
+    <wallet:WalletFunds></wallet:WalletFunds>
+    <wallet:WalletSummary></wallet:WalletSummary>
+    <wallet:WalletPrevision></wallet:WalletPrevision>
+</div>
+
+<script type="application/x-go">
+
+type Wallet struct {}
+
+</script>

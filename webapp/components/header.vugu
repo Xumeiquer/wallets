@@ -1,0 +1,260 @@
+<header class="container-fluid">
+    <nav class="navbar fixed-top navbar-dark bg-primary navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/images/dollar.png" alt="" width="30" height="24">
+                Wallets
+            </a>
+            <div class="collapse navbar-collapse" id="toggleNavBarMenu">
+                <!-- MENU -->
+            </div>
+            <form>
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <vgform:Select id="walletSelector" class="form-control" style="min-width: 150px;"
+                            :Value="c"
+                            :Options="c.GetWalletsIDName()"
+                        ></vgform:Select>
+                    </div>
+                </div>
+            </form>
+            <div vg-if='c.ActiveWallet != nil' class="btn-group dropstart" style="margin-left: 10px;">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Options
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" @click='c.ShowModal(event, "RenameWallet")' href="#">Rename</a></li>
+                    <li><a class="dropdown-item" @click='c.ShowModal(event, "DeleteWallet")' href="#">Delete</a></li>
+                </ul>
+            </div>
+            <div>
+                <button type="button" class="btn btn-warning" 
+                    style="margin-left: 10px;"
+                    @click='c.ShowModal(event, "NewWallet")'>Add walet</button>
+            <div>
+        </div>
+    </nav>
+    <div class="modal fade" id="NewWallet" tabindex="-1" aria-labelledby="NewWalletHeader" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="NewWalletHeader">New wallet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="wallet-name" class="col-form-label">Wallet name:</label>
+                            <input type="text" class="form-control" id="walletCreate">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button"
+                        class="btn btn-primary"
+                        @click='c.HandleModal(event, "walletCreate")'>Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="RenameWallet" tabindex="-1" aria-labelledby="RenameWalletHeader" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="RenameWalletHeader">Rename wallet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="wallet-name" class="col-form-label">Wallet name:</label>
+                            <input type="text" class="form-control" id="walletRename">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button"
+                        class="btn btn-primary"
+                        @click='c.HandleModal(event, "walletRename")'>Rename</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="DeleteWallet" tabindex="-1" aria-labelledby="DeleteWalletHeader" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="DeleteWalletHeader">Delete wallet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Do you want to proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button"
+                        class="btn btn-primary"
+                        @click='c.HandleModal(event, "walletDelete")'>Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script type="application/x-go">
+import (
+    "fmt"
+
+    "github.com/Xumeiquer/wallets/models"
+    "github.com/Xumeiquer/wallets/webapp/middleware"
+)
+type Header struct {
+    middleware.APIRef
+    middleware.StateRef
+
+    ActiveWallet *models.Wallet `vugu:"data"`
+    Wallets []models.Wallet `vugu:"data"`
+
+    modalHolder js.Value
+}
+
+
+func (h *Header) Init(ctx vugu.InitCtx) {
+    fmt.Println("[HEADER] Init")
+
+    var err error
+    h.Wallets, _ = h.API.GetWallets()
+
+    v, err := h.State.Get("activeWallet")
+    if err == nil {
+        w, ok := v.(*models.Wallet)
+        if ok {
+            h.ActiveWallet = w
+        } else {
+            js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
+        }
+    } else {
+        js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
+    }
+}
+
+func (h *Header) GetWalletsIDName() vgform.MapOptions {
+    fmt.Println("[HEADER] GetWalletsIDName")
+
+    var opts vgform.MapOptions
+    opts = make(vgform.MapOptions)
+
+    opts[""] = "Select a wallet"
+    for _, wallet := range h.Wallets {
+        opts[wallet.GetID()] = wallet.GetName()
+    }
+
+    return opts
+}
+
+func (h *Header) StringValue() string {
+    fmt.Println("[HEADER] StringValue")
+
+    if h.ActiveWallet == nil {
+        return ""
+    }
+    
+    return h.ActiveWallet.GetName()
+}
+
+func (h *Header) SetStringValue(v string) {
+    fmt.Println("[HEADER] SetStringValue")
+
+    for _, wallet := range h.Wallets {
+        if wallet.ID == v {
+            h.ActiveWallet = &wallet
+            h.State.Set("activeWallet", &wallet)
+            break
+        }
+    }
+}
+
+func (h *Header) ShowModal(event vugu.DOMEvent, id string) {
+    fmt.Println("[HEADER] ShowModal")
+
+    modalElem := js.Global().Get("document").Call("getElementById", id)
+    bootstrap := js.Global().Get("bootstrap").Get("Modal")
+
+    h.modalHolder = bootstrap.New(modalElem, map[string]interface{}{
+        "backdrop": true,
+        "keyboard": true,
+        "focus": true,
+    })
+
+    h.modalHolder.Call("toggle")
+}
+
+func (h *Header) HandleModal(event vugu.DOMEvent, action string) {
+    fmt.Printf("[HEADER] HandleModal :: %s\n", action)
+
+    ee := event.EventEnv()
+
+    if action == "walletDelete" {
+        go func(){
+            ee.Lock()
+            defer ee.UnlockRender()
+
+            waletID := h.ActiveWallet.GetID()
+
+            err := h.API.DeleteWallet((*h.ActiveWallet))
+            if err == nil {
+                for idx, w := range h.Wallets {
+                    if w.GetID() == waletID {
+                        h.Wallets = append(h.Wallets[:idx], h.Wallets[idx+1:]...)
+                        h.ActiveWallet = nil
+                        h.State.Set("activeWallet", nil)
+                        break
+                    }
+                }
+            } else {
+                js.Global().Get("alert").Invoke("Unbale to delete the selected wallet. Err " + err.Error())
+            }
+        }()
+    } else {
+        input := js.Global().Get("document").Call("getElementById", action)
+        actionValue := input.Get("value").String()
+
+        switch action {
+            case "walletCreate":
+                go func(){
+                    wallet, err := h.API.CreateWallet(actionValue)
+                    if err == nil {
+                        h.Wallets = append(h.Wallets, wallet)
+                    } else {
+                        js.Global().Get("alert").Invoke("Unbale to create the new wallet. Err " + err.Error())
+                    }
+                }()
+            case "walletRename":
+                go func(){
+                    walletCopy := h.ActiveWallet.GetCopy()
+                    walletCopy.SetName(actionValue)
+
+                    err := h.API.UpdateWallet(walletCopy)
+                    if err == nil {
+                        for idx, w := range h.Wallets {
+                            if w.GetID() == h.ActiveWallet.GetID() {
+                                h.Wallets[idx] = walletCopy
+                            }
+                        }
+
+                        h.ActiveWallet = &walletCopy
+
+                        h.State.Set("activeWallet", &walletCopy)
+                    } else {
+                        js.Global().Get("alert").Invoke("Unbale to edit the selected wallet. Err "+ err.Error())
+                    }
+                }()
+        }
+    }
+
+    h.modalHolder.Call("toggle")
+}
+
+</script>

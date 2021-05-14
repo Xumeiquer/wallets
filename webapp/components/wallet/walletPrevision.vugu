@@ -1,0 +1,179 @@
+<div class="conatiner">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-12">
+            <p style="font-weight: bold;text-transform: uppercase;">Accumulated profitability</p>
+            <table class="table table-striped table-hover table-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Fund</th>
+                        <th scope="col">€</th>
+                        <th scope="col">Simple</th>
+                        <th scope="col">TWR</th>
+                        <th scope="col">MWR</th>
+                    </tr>
+                </thead>
+                <tbody vg-if="len(c.GetOprations())==0">
+                    <tr>
+                        <td colspan="5">
+                            <span>There are no operations yet.</span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody vg-if="len(c.GetOprations())>0">
+                    <tr vg-for="fundName, values := range c.GetProfitability()">
+                        <th scope="row">
+                            <span vg-content="fundName"></span>
+                        </th>
+                        <td vg-for="_, value := range values">
+                            <span vg-content="value"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-12">
+            <p style="font-weight: bold;text-transform: uppercase;">Historical</p>
+            <table class="table table-striped table-hover table-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Fund</th>
+                        <th scope="col">1-Day</th>
+                        <th scope="col">1-Week</th>
+                        <th scope="col">1-Month</th>
+                        <th scope="col">3-Month</th>
+                        <th scope="col">1-Year</th>
+                        <th scope="col">3-Year</th>
+                        <th scope="col">5-Year</th>
+                    </tr>
+                </thead>
+                <tbody vg-if="len(c.GetFunds())<=0">
+                    <tr>
+                        <td colspan="8">
+                            <span>There are no Funds registered yet.</span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody vg-if="len(c.GetFunds())>0">
+                    <tr vg-for="fundName, values := range c.GetHistorical()">
+                        <th scope="row">
+                            <span vg-content="fundName"></span>
+                        </th>
+                        <td vg-for="_, value := range values">
+                            <span vg-content="value"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="application/x-go">
+import (
+    "fmt"
+    "time"
+
+    "github.com/Xumeiquer/wallets/models"
+    "github.com/Xumeiquer/wallets/webapp/middleware"
+)
+
+type WalletPrevision struct {
+    middleware.StateRef
+    middleware.LoaderRef
+
+    ActiveWallet *models.Wallet `vugu:"data"`
+}
+
+func (w *WalletPrevision) Init() {
+    fmt.Println("[WALLET-PREVISION] Init")
+
+    v, err := w.State.Get("activeWallet")
+    if err == nil {
+        wa, ok := v.(*models.Wallet)
+        if ok {
+            w.ActiveWallet = wa
+            err = w.Loader.UpdateFundsData(w.ActiveWallet)
+            if err != nil {
+                js.Global().Get("alert").Invoke("Unbale to load funds data")
+            }
+        } else {
+            js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
+        }
+    } else {
+        js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
+    }
+}
+
+func (w *WalletPrevision) Compute() {
+    fmt.Println("[WALLET-PREVISION] Compute")
+
+    v, err := w.State.Get("activeWallet")
+    if err == nil {
+        wa, ok := v.(*models.Wallet)
+        if ok {
+            w.ActiveWallet = wa
+            err = w.Loader.UpdateFundsData(w.ActiveWallet)
+            if err != nil {
+                js.Global().Get("alert").Invoke("Unbale to load funds data")
+            }
+        } else {
+            js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
+        }
+    } else {
+        js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
+    }
+}
+
+func (w *WalletPrevision) GetOprations() models.Operations {
+    fmt.Println("[WALLET-PREVISION] GetOprations")
+
+    return w.ActiveWallet.GetOperations()
+}
+
+func (w *WalletPrevision) GetFunds() models.Funds {
+    fmt.Println("[WALLET-PREVISION] GetFunds")
+
+    return w.ActiveWallet.GetFunds()
+}
+
+
+func (w *WalletPrevision) GetProfitability() map[string][]string {
+    fmt.Println("[WALLET-PREVISION] GetProfitability")
+
+    res := map[string][]string{}
+    var sign string
+
+    for insi, values := range w.ActiveWallet.Profitability() {
+        fundName := w.ActiveWallet.GetFundNameByInsi(insi)
+        res[fundName] = []string{}
+        for idx, value := range values {
+            if idx == 0 {
+                sign = "€"
+            } else {
+                sign = "%"
+            }
+            res[fundName] = append(res[fundName], fmt.Sprintf("%.3f%s", value, sign))
+        }
+    }
+
+    return res
+}
+
+func (w *WalletPrevision) GetHistorical() map[string][]string {
+    fmt.Println("[WALLET-PREVISION] GetHistorical")
+
+    res := map[string][]string{}
+    sign := "%"
+
+    for _, fundData := range w.ActiveWallet.GetFunds() {
+        fundName := fundData.GetName()
+        res[fundName] = []string{}
+        for _, value := range fundData.Predictions() {
+            res[fundName] = append(res[fundName], fmt.Sprintf("%.3f%s", value, sign))
+        }
+    }
+    return res
+}
+</script>

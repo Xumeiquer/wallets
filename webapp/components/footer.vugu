@@ -1,0 +1,37 @@
+<div class="footer-margin">
+    <footer class="footer fixed-bottom mt-auto py-3 bg-light">
+        <div class="container-fluid">
+            <span class="text-muted" vg-content='c.CopyRight'></span>
+            <div class="float-end">
+                <a href='https://ko-fi.com/M4M625UW0' target='_blank'><img height='30' style='border:0px;height:30px;' src='https://cdn.ko-fi.com/cdn/kofi2.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<style>
+.footer-margin {
+  height: 100px;
+}
+</style>
+
+<script type="application/x-go">
+    import (
+        "fmt"
+        "time"
+    )
+    type Footer struct {
+        Author string
+        Date int 
+        CopyRight string
+    }
+
+    func (f *Footer) Init(ctx vugu.InitCtx) {
+        fmt.Println("[FOOTER] Init")
+        
+        f.Author = "Jaume Martin"
+        f.Date = time.Now().Year()
+        f.CopyRight = fmt.Sprintf("%s © %d", f.Author, f.Date)
+    }
+
+</script>
