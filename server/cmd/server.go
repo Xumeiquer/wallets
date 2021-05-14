@@ -7,7 +7,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strings"
 
 	"github.com/Xumeiquer/wallets/server/middleware/content"
 	"github.com/Xumeiquer/wallets/server/middleware/headers"
@@ -20,7 +19,7 @@ import (
 )
 
 const (
-	version = "v0.0.1"
+	version = "v1.0.0"
 )
 
 var rootCmd = &cobra.Command{
@@ -103,26 +102,9 @@ func areFlagsValid(flags *pflag.FlagSet) bool {
 		}
 		return port > 0 && port < 65535
 	}
-	validPath := func(path string) bool {
-		if debug {
-			fmt.Printf("DB Path: %s -> ", path)
-		}
-		pathInfo, err := os.Stat(path)
-		if err != nil {
-			if debug {
-				fmt.Printf("%t\n", strings.HasSuffix(err.Error(), "no such file or directory"))
-			}
-			return strings.HasSuffix(err.Error(), "no such file or directory")
-		}
-		if debug {
-			fmt.Printf("%t\n", !pathInfo.IsDir())
-		}
-		return !pathInfo.IsDir()
-	}
 
 	ip, _ := flags.GetString("bind")
 	port, _ := flags.GetInt("port")
-	dbPath, _ := flags.GetString("database")
 
-	return validIP(ip) && validPort(port) && validPath(dbPath)
+	return validIP(ip) && validPort(port)
 }
