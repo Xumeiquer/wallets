@@ -3,7 +3,6 @@ version: '3'
 tasks:
   default:
     cmds:
-      - task: install-tools
       - task: client
       - task: copy-assets
       - task: server
@@ -73,4 +72,4 @@ tasks:
   install-tools:
     cmds:
       - go get -u github.com/vugu/vugu
-      - vugu -install-tools
+      - {{GOBIN}}vugu -install-tools
