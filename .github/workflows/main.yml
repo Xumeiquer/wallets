@@ -30,9 +30,9 @@ jobs:
         with:
           go-version: '^1.16.0'
 
-      - name: Get the version
+      - name: Get tag
         id: tag
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        uses: dawidd6/action-get-tag@v1
 
       - name: Setup go-task/task
         uses:  Arduino/actions/setup-taskfile@master
@@ -51,7 +51,7 @@ jobs:
         uses: ncipollo/release-action@v1.8.5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: WALLET-${{ steps.tag.outputs.VERSION }}
+          name: WALLET-${{steps.tag.outputs.tag}}
           bodyFile: "CHANGELOG.md"
           draft: false
           artifacts: dist/*
