@@ -1,3 +1,8 @@
+<a name="unreleased"></a>
+## [Unreleased]
+### Chores
+- added make-release.sh
+
 
 <a name="v1.0.1"></a>
 ## [v1.0.1] - 2021-05-14
