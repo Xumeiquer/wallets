@@ -44,8 +44,6 @@ jobs:
           task clean && task
       
       - name: Create Release
-        # You may pin to the exact commit or the version.
-        # uses: ncipollo/release-action@95215a3cb6e6a1908b3c44e00b4fdb15548b1e09
         uses: ncipollo/release-action@v1.8.5
         with:
           # An optional set of paths representing artifacts to upload to the release. This may be a single path or a comma delimited list of paths (or globs)
