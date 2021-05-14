@@ -1,4 +1,4 @@
-# WALLETS
+# WALLETS
 
 This is a small tool for tracking wallets for indexed funds.
 
