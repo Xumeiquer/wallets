@@ -72,4 +72,4 @@ tasks:
   install-tools:
     cmds:
       - go get -u github.com/vugu/vugu
-      - vugu -install-tools
+      - vgrun -install-tools
