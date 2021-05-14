@@ -71,5 +71,6 @@ tasks:
   
   install-tools:
     cmds:
+      - go get -u github.com/sqs/goreturns
       - go get -u github.com/vugu/vgrun
       - vgrun -install-tools
