@@ -3,6 +3,7 @@ version: '3'
 tasks:
   default:
     cmds:
+      - task: install-tools
       - task: client
       - task: copy-assets
       - task: server
