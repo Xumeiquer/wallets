@@ -72,9 +72,4 @@ tasks:
   install-tools:
     cmds:
       - go get -u github.com/vugu/vgrun
-      - echo "$GOPATH"
-      - echo "$GOBIN"
-      - ls -lah /home/runner/go
-      - ls -lah /home/runner/go/bin
-      - ls -lah /home/runner/go/src
-      - vgrun -install-tools
+      - /home/runner/go/bin/vgrun -install-tools

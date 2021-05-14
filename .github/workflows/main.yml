@@ -31,7 +31,6 @@ jobs:
       - name: Update Go envs
         run: |
           export PATH=$PATH:$(go env GOPATH)/bin
-          echo "PATH: $PATH"
 
       - name: Setup go-task/task
         uses:  Arduino/actions/setup-taskfile@master
