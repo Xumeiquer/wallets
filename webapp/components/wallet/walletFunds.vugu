@@ -163,8 +163,6 @@ func (w *WalletFunds) Init() {
         } else {
             js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
         }
-    } else {
-        js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
     }
 }
 
@@ -183,8 +181,6 @@ func (w *WalletFunds) Compute() {
         } else {
             js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
         }
-    } else {
-        js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
     }
 }
 

@@ -37,8 +37,6 @@ func (d *Dashboard) Init() {
         } else {
             js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
         }
-    } else {
-        js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
     }
 }
 </script>

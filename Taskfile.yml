@@ -29,6 +29,12 @@ tasks:
   build:
     cmds:
       - GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build -o dist/server_{{.GOOS}}_{{.GOARCH}} server/main.go
+  build-arm:
+    cmds:
+      - GOOS={{.GOOS}} GOARCH={{.GOARCH}} GOARM={{.GOARM}} go build -o dist/server_{{.GOOS}}_{{.GOARCH}}_{{.GOARM}} server/main.go
+  build-arm-8:
+    cmds:
+      - GOOS={{.GOOS}} GOARCH={{.GOARCH}} GOARM={{.GOARM}} go build -o dist/server_{{.GOOS}}_{{.GOARCH}} server/main.go
   build-windows:
     cmds:
       - GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build -o dist/server_{{.GOOS}}_{{.GOARCH}}.exe server/main.go
@@ -52,9 +58,15 @@ tasks:
       - task: build
         vars: {GOOS: "linux", GOARCH: "amd64"}
       - task: build
-        vars: {GOOS: "linux", GOARCH: "arm"}
-      - task: build
         vars: {GOOS: "linux", GOARCH: "arm64"}
+      - task: build-arm
+        vars: {GOOS: "linux", GOARCH: "arm", GOARM: "5"}
+      - task: build-arm
+        vars: {GOOS: "linux", GOARCH: "arm", GOARM: "6"}
+      - task: build-arm
+        vars: {GOOS: "linux", GOARCH: "arm", GOARM: "7"}
+      - task: build-arm-8
+        vars: {GOOS: "linux", GOARCH: "arm64", GOARM: ""}
 
   copy-assets:
     cmds:

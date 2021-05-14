@@ -135,8 +135,6 @@ func (h *Header) Init(ctx vugu.InitCtx) {
         } else {
             js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
         }
-    } else {
-        js.Global().Get("alert").Invoke("Unbale to load the selected wallet")
     }
 }
 
@@ -224,6 +222,9 @@ func (h *Header) HandleModal(event vugu.DOMEvent, action string) {
         switch action {
             case "walletCreate":
                 go func(){
+                    ee.Lock()
+                    defer ee.UnlockRender()
+
                     wallet, err := h.API.CreateWallet(actionValue)
                     if err == nil {
                         h.Wallets = append(h.Wallets, wallet)
@@ -233,6 +234,9 @@ func (h *Header) HandleModal(event vugu.DOMEvent, action string) {
                 }()
             case "walletRename":
                 go func(){
+                    ee.Lock()
+                    defer ee.UnlockRender()
+                    
                     walletCopy := h.ActiveWallet.GetCopy()
                     walletCopy.SetName(actionValue)
 

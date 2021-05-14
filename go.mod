@@ -12,6 +12,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/vugu/vgrouter v0.0.0-20200725205318-eeb478c42e5d
+	github.com/vugu/vjson v0.0.0-20200505061711-f9cbed27d3d9
 	github.com/vugu/vugu v0.3.4
 	go.etcd.io/bbolt v1.3.5
 	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd
