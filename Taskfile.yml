@@ -6,7 +6,7 @@ tasks:
       - task: client
       - task: copy-assets
       - task: server
-    
+
   devel:
     cmds:
       - task: client
@@ -72,4 +72,4 @@ tasks:
   install-tools:
     cmds:
       - go get -u github.com/vugu/vgrun
-      - /home/runner/go/bin/vgrun -install-tools
+      - vgrun -install-tools
