@@ -6,6 +6,12 @@ tasks:
       - task: client
       - task: copy-assets
       - task: server
+    
+  devel:
+    cmds:
+      - task: client
+      - task: copy-assets
+      - task: dev-server
 
   client:
     env:
@@ -18,12 +24,32 @@ tasks:
       - find . -name "*_vgen.go" -exec goreturns -w {} \;
       - go build -o build/main.wasm webapp/main.go
       - cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" build/wasm_exec.js
-  
+
+  build:
+    cmds:
+      - GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build -o dist/server_{{.GOOS}}_{{.GOARCH}} server/main.go
+
+  dev-server:
+    cmds:
+      - task: mkdir
+        vars: {FOLDER: "dist"}
+      - task: build
+        vars: {GOOS: "darwin", GOARCH: "amd64"}
+
   server:
     cmds:
       - task: mkdir
         vars: {FOLDER: "dist"}
-      - go build -o dist/server server/main.go   
+      - task: build
+        vars: {GOOS: "windows", GOARCH: "amd64"}
+      - task: build
+        vars: {GOOS: "darwin", GOARCH: "amd64"}
+      - task: build
+        vars: {GOOS: "linux", GOARCH: "amd64"}
+      - task: build
+        vars: {GOOS: "linux", GOARCH: "arm"}
+      - task: build
+        vars: {GOOS: "linux", GOARCH: "arm64"}
 
   copy-assets:
     cmds:
