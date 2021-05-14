@@ -46,5 +46,8 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1.8.5
         with:
-          # An optional set of paths representing artifacts to upload to the release. This may be a single path or a comma delimited list of paths (or globs)
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: WALLET-${GITHUB_REF##*/}
+          bodyFile: "CHANGELOG.md"
+          draft: false
           artifacts: dist/*
