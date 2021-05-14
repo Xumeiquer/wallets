@@ -44,10 +44,8 @@ jobs:
           export PATH=$PATH:$(go env GOPATH)/bin
           task clean && task
       
-      - name: release-please-action
-        uses: google-github-actions/release-please-action@v2.19.2
+      - name: 'Publish the artefacts'
+        uses: 'actions/upload-artifact@v2'
         with:
-          release-type: golang
-          path: dist
-          command: github-release
-          default-branch: main
+          name: Wallet
+          path: ./dist/
