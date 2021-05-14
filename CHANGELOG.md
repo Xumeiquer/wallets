@@ -5,6 +5,8 @@
 - Wallet selector not refreshing new wallets
 
 ### Chores
+- added make-release.sh
+- changelog for the release is creted during building process
 - adding changelog builder template
 
 

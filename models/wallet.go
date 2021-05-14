@@ -382,8 +382,8 @@ func (w Wallet) GetAssetsAllocationPOJO() map[string]interface{} {
 		colors = append(colors, c)
 	}
 
-	for fundName, allocation := range w.Allocations() {
-		labels = append(labels, fundName)
+	for fundInsi, allocation := range w.Allocations() {
+		labels = append(labels, w.GetFundNameByInsi(fundInsi))
 		data = append(data, allocation[1])
 	}
 
