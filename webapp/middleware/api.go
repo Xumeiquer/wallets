@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -58,7 +57,7 @@ func (api *API) GetWallets() ([]models.Wallet, error) {
 	}
 	defer resp.Body.Close()
 
-	data, err := io.ReadAll(resp.Body)
+	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("[API] ERROR - READ_ALL_BODY :: %s\n", err.Error())
 		return []models.Wallet{}, err
