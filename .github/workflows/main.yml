@@ -37,7 +37,7 @@ jobs:
         uses:  Arduino/actions/setup-taskfile@master
         
       - name: Install build tools
-        run: task installs-tools
+        run: "task install-tools"
       
       - name: Clean and Build
         run: task clean && task
