@@ -29,6 +29,9 @@ tasks:
   build:
     cmds:
       - GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build -o dist/server_{{.GOOS}}_{{.GOARCH}} server/main.go
+  build-windows:
+    cmds:
+      - GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build -o dist/server_{{.GOOS}}_{{.GOARCH}}.exe server/main.go
 
   dev-server:
     cmds:
@@ -42,7 +45,7 @@ tasks:
       - task: mkdir
         vars: {FOLDER: "dist"}
       - go mod tidy
-      - task: build
+      - task: build-windows
         vars: {GOOS: "windows", GOARCH: "amd64"}
       - task: build
         vars: {GOOS: "darwin", GOARCH: "amd64"}
